@@ -16,14 +16,40 @@ class Model(db.Model):
     """Car model."""
 
     __tablename__ = "models"
-    pass
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    year = db.Column(db.Integer, nullable=False)
+    brand_name = db.Column(db.String(50), 
+                db.ForeignKey('brands.name'))
+    name = db.Column(db.String(50), nullable=False)
+
+    brand = db.relationship('Brand', backref=db.backref('models'))
+
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+
+        return "<Model model_id={} brand_name={} name={} year={}".format(
+                    self.id, self.brand_name, self.name, self.year)
 
 
 class Brand(db.Model):
     """Car brand."""
 
     __tablename__ = "brands"
-    pass
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    founded = db.Column(db.Integer)
+    headquarters = db.Column(db.String(50))
+    discontinued = db.Column(db.Integer)
+
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+
+        return "<Brand brand_id={} name={} founded={} headquarters={} discontinued={}".format(
+                                    self.id, self.name, self.founded, 
+                                    self.headquarters, self.discontinued)
+
 
 
 # End Part 1
@@ -46,7 +72,7 @@ def connect_to_db(app):
 
     # Configure to use our database
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:///cars'
-    app.config['SQLALCHEMY_ECHO'] = True
+    # app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
 
