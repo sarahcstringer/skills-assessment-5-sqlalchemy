@@ -14,7 +14,7 @@ here, so feel free to refer to classes without the
 # from model import *
 
 from model import *
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 init_app()
 
@@ -24,36 +24,36 @@ init_app()
 
 # Get the brand with the **id** of 8.
 
-# print Brand.query.get(8) #returns a Brand object
+print Brand.query.get(8) #returns a Brand object
 
 # Get all models with the **name** Corvette and the **brand_name** Chevrolet.
 
-# print Model.query.filter_by(brand_name='Chevrolet', name='Corvette').all()
+print Model.query.filter_by(brand_name='Chevrolet', name='Corvette').all()
 
 # Get all models that are older than 1960.
 
-# print Model.query.filter(Model.year < 1960).all()
+print Model.query.filter(Model.year < 1960).all()
 
 # Get all brands that were founded after 1920.
 
-# print Brand.query.filter(Brand.founded > 1920).all()
+print Brand.query.filter(Brand.founded > 1920).all()
 
 # Get all models with names that begin with "Cor".
 
-# print Model.query.filter(Model.name.like('Cor%')).all()
+print Model.query.filter(Model.name.like('Cor%')).all()
 
 # Get all brands that were founded in 1903 and that are not yet discontinued.
 
-# print Brand.query.filter(Brand.founded == 1903, Brand.discontinued.is_(None)).all()
+print Brand.query.filter(Brand.founded == 1903, Brand.discontinued.is_(None)).all()
 
 # Get all brands that are either 1) discontinued (at any time) or 2) founded 
 # before 1950.
 
-# print Brand.query.filter(or_(Brand.discontinued.isnot(None), Brand.founded < 1950)).all()
+print Brand.query.filter(or_(Brand.discontinued.isnot(None), Brand.founded < 1950)).all()
 
 # Get any model whose brand_name is not Chevrolet.
 
-# print Model.query.filter(Model.brand_name != 'Chevrolet').all()
+print Model.query.filter(Model.brand_name != 'Chevrolet').all()
 
 
 # Fill in the following functions. (See directions for more info.)
@@ -65,6 +65,7 @@ def get_model_info(year):
     model_info = Model.query.filter(Model.year == year).all()
 
     for model in model_info:
+
         #handles null values for brand (ex: Fillmore model)
         if model.brand == None:
             print "Model: {}; Brand Name: None; Headquarters: None".format(
@@ -81,33 +82,44 @@ def get_brands_summary():
     
     brands_summary = Brand.query.all()
 
+    # loop through each brand
     for brand in brands_summary:
+        # print the brand name
         print "Brand: {}".format(brand.name)
+        # loop through and print each model for that specific brand
         for model in brand.models:
-            print "\tModel: {}; Year: {}".format(model.name, model.year)    
+            print "\tModel: {} ({})".format(model.name, model.year)    
 
-# get_model_info(1960)
-# get_brands_summary()
+get_model_info(1960)
+get_brands_summary()
+
 # -------------------------------------------------------------------
 # Part 2.5: Discussion Questions (Include your answers as comments.)
 
 # 1. What is the returned value and datatype of ``Brand.query.filter_by(name='Ford')``?
 
 # A query object, which could then have .first(), .add(), or .all() added to complete
-# the query and get an object matching those criteria.
+# the query and get an object matching those criteria in the query.
 
 # 2. In your own words, what is an association table, and what *type* of relationship
 # does an association table manage?
 
-
+# An association table is a table that allows two many-to-many relationships to connect
+# to one another. In database modeling, many-to-many relationships cannot directly
+# associate, so an association table is necessary to create two one-to-many relationships
+# through which the entities can connect using their primary keys as foreign keys in the
+# association table.
 
 # -------------------------------------------------------------------
 # Part 3
 
 def search_brands_by_name(mystr):
     
-    return Brand.query.filter(Brand.name.like('%'+mystr+'%')).all()
+    #returns any brand that has the lowercase value of 'mystr'
+    # return Brand.query.filter(func.lower(Brand.name).like('%'+mystr.lower()+'%')).all()
 
+    #this would return any brand that matches the case of mystr
+    return Brand.query.filter(Brand.name.like('%'+mystr+'%')).all()
 
 def get_models_between(start_year, end_year):
     

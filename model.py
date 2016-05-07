@@ -19,10 +19,12 @@ class Model(db.Model):
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     year = db.Column(db.Integer, nullable=False)
+    #set foreign key from brands table, referential integrity
     brand_name = db.Column(db.String(50), 
                 db.ForeignKey('brands.name'))
     name = db.Column(db.String(50), nullable=False)
 
+    # define how to reference back to brands from model object
     brand = db.relationship('Brand', backref=db.backref('models'))
 
     def __repr__(self):
